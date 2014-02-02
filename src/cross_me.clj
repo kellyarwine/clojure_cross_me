@@ -1,30 +1,5 @@
 (ns cross-me)
 
-(def new-line "\n")
-
-(defn build-row-border [value]
-  (str value "|"))
-
-(defn build-row-contents [value]
-  (take value (repeat "x")))
-
-(defn build-row [value]
-  (concat
-    (build-row-border 5)
-    (build-row-contents 5)
-    new-line))
-
-(defn build-board []
-  (apply println
-    (concat
-       '("\n")
-       (build-row 5)
-       (build-row 5)
-       (build-row 5)
-       (build-row 5)
-       (build-row 5)
-       '("  +----------\n"))))
-
 (defn mark-cell? [amt-marked index size]
     (and (> (inc index) (- size amt-marked))
          (< index amt-marked)))
