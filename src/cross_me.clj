@@ -1,60 +1,50 @@
-(ns cross-me)
+(ns cross-me
+  (:require [clojure.math.combinatorics :as comb]))
 
-(defn mark-cell? [amt-marked index size]
-    (and (> (inc index) (- size amt-marked))
-         (< index amt-marked)))
+(def not-nil? (complement nil?))
 
-(defn get-row-contents [row-clues column-clues row-index]
-  (concat
-    (for [column-index (range (count column-clues))]
-        (if (or (mark-cell? (nth row-clues row-index) column-index (count column-clues))
-                (mark-cell? (nth column-clues column-index) row-index (count row-clues)))
-          "x "
-          "- "))))
+(defn first-ok? [row-possibility]
+  (or
+    (and (not-nil? (first row-possibility))
+         (nil? (second row-possibility)))
+    (nil? (first row-possibility))))
 
-(defn grid [row-clues column-clues]
-  (apply println
-    (concat
-      (for [row-index (range (count row-clues))]
-        (apply str
-          "\n"
-          (cons (str (nth row-clues row-index) " ")
-          (get-row-contents row-clues column-clues row-index))))
-      "\n"
-      column-clues)
-  ))
+(defn last-ok? [row-possibility]
+  (or
+    (and (not-nil? (last row-possibility))
+         (nil? (nth row-possibility (- (count row-possibility) 2))))
+    (nil? (last row-possibility))))
 
-; 1|■   ■
-; 2|  ■ ■
-; 1|    ■
-; 1|    ■ ■
-; 2|    ■   ■ ■
-;  +-------------
-;   1 1 5 1 1 1
+(defn middles-ok? [row-possibility]
+  (loop [row-possibility row-possibility
+         i 1]
+    (if (= i (dec (count row-possibility)))
+      true
+      (if (= false (or
+                     (nil? (nth row-possibility i))
+                     (and (nil? (nth row-possibility (inc i)))
+                          (nil? (nth row-possibility (dec i))))))
+        false
+        (recur row-possibility (inc i))))))
 
-; 5|■ ■ ■ ■ ■
-; 3|  ■ ■ ■
-; 1|    ■
-; 3|  ■ ■ ■
-; 5|■ ■ ■ ■ ■
-;  +---------
-;   1 2 5 2 1
-   ;1 2   2 1
+(defn nils-between-segments? [row-possibility]
+  (and (first-ok? row-possibility)
+       (last-ok? row-possibility)
+       (middles-ok? row-possibility)))
 
-; 6|■ ■ ■ ■ ■ ■
-; 4|■ ■ ■ ■
-; 3|■ ■ ■
-; 2|■ ■
-; 1|■
-;  +-------------
-;   5 4 3 2 1 1
+(defn segments-in-right-sequence? [row-possibility segments]
+  (= segments (filter not-nil? row-possibility)))
 
-;if number in column var = count of rows then you know whole row is shaded
-; vice versa
+(defn flatten-nested-vectors [vector-with-nests]
+  (map #(flatten %) vector-with-nests))
 
-;if number in column var > 1/2 of count of rows, some can be shaded...
-;so if clue is 4 and row count is 5, then 3 can be shaded...
-;(5-4) = 1, then 1 cannot be shaded and 5 cannot be shaded
-;if 5-3 = 2, then 1,2 cannot be shaded and 5,4 cannot be shaded
-;shade starting at calc+1 and go to count-calc
-; vice versa
+(defn row-possibilities [row row-clue]
+  (let [width (count row)
+        filled-spaces (reduce + row-clue)
+        segments (into [] (map #(into [] (repeat % "x")) row-clue))
+        empty-spaces (into [] (repeat (- width filled-spaces) nil))]
+    (flatten-nested-vectors
+      (into []
+      (filter #(and (nils-between-segments? %) (segments-in-right-sequence? % segments))
+        (into [] (comb/permutations
+          (concat segments empty-spaces))))))))
