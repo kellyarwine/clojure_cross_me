@@ -64,35 +64,35 @@
             ps (vector p1 p2 p3 p4)]
       (should== ps (row-possibilities [nil nil nil nil nil nil nil] [1 2 1])))))
 
-    (describe "#segments-in-right-sequence?"
+    (describe "#in-right-sequence?"
       (it "returns true when the segments are in the right order"
-        (should (segments-in-right-sequence? '(["x"] "." ["x" "x"] ".") [["x"] ["x" "x"]])))
+        (should (in-right-sequence? '(["x"] "." ["x" "x"] ".") [["x"] ["x" "x"]])))
 
       (it "returns false when the segments are not in the right order"
-        (should-not (segments-in-right-sequence? '(["x"] "." ["x" "x"] ".") [["x" "x"] ["x"]]))))
+        (should-not (in-right-sequence? '(["x"] "." ["x" "x"] ".") [["x" "x"] ["x"]]))))
 
-    (describe "#blanks-between-segments?"
+    (describe "#blanks-between?"
       (it "returns true when there are blanks between each segment"
-        (should (blanks-between-segments? [["x"] "." ["x" "x"] "." ["x"]])))
-
-      (it "returns true when there are blanks between each segment"
-        (should (blanks-between-segments? [["x"] "." "." ["x" "x"] "." "." ["x"]])))
+        (should (blanks-between? [["x"] "." ["x" "x"] "." ["x"]])))
 
       (it "returns true when there are blanks between each segment"
-        (should (blanks-between-segments? ["." ["x"] "." ["x" "x"] "." ["x"] "."])))
+        (should (blanks-between? [["x"] "." "." ["x" "x"] "." "." ["x"]])))
 
       (it "returns true when there are blanks between each segment"
-        (should-not (blanks-between-segments? [["x"] ["x" "x"] "." ["x"]])))
+        (should (blanks-between? ["." ["x"] "." ["x" "x"] "." ["x"] "."])))
+
+      (it "returns true when there are blanks between each segment"
+        (should-not (blanks-between? [["x"] ["x" "x"] "." ["x"]])))
 
       (it "returns true when there is only one solid segment"
-        (should (blanks-between-segments? [["x"]])))
+        (should (blanks-between? [["x"]])))
 
       (it "returns true when there is two solid segments"
-        (should (blanks-between-segments? [["x"] "." ["x"]])))
+        (should (blanks-between? [["x"] "." ["x"]])))
 
       (it "returns true when there is two solid segments"
-        (should (blanks-between-segments? ["." ["x"] "."])))
+        (should (blanks-between? ["." ["x"] "."])))
 
       (it "returns true when there is two solid segments"
-        (should (blanks-between-segments? ["." "." "." ["x"] "." "."]))))
+        (should (blanks-between? ["." "." "." ["x"] "." "."]))))
 )

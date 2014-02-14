@@ -34,12 +34,12 @@
         false
         (recur row-possibility (inc i))))))
 
-(defn blanks-between-segments? [row-possibility]
+(defn blanks-between? [row-possibility]
   (and (first-ok? row-possibility)
        (last-ok? row-possibility)
        (middles-ok? row-possibility)))
 
-(defn segments-in-right-sequence? [row-possibility segments]
+(defn in-right-sequence? [row-possibility segments]
   (= segments (filter not-blank? row-possibility)))
 
 (defn flatten-nested-vectors [vector-with-nests]
@@ -52,7 +52,7 @@
         empty-spaces (into [] (repeat (- width filled-spaces) blank))]
     (flatten-nested-vectors
       (into []
-      (filter #(and (blanks-between-segments? %) (segments-in-right-sequence? % segments))
+      (filter #(and (blanks-between? %) (in-right-sequence? % segments))
         (into [] (comb/permutations
           (concat segments empty-spaces))))))))
 
